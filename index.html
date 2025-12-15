@@ -105,24 +105,7 @@
         <h1>随机豆瓣出版社页面</h1>
         <p>点击按钮，随机访问豆瓣上出版社的图书页面</p>
         
-        <div class="info">
-            <div class="info-item">
-                <span class="info-label">出版社ID:</span>
-                <span class="info-value" id="publisherId">-</span>
-            </div>
-            <div class="info-item">
-                <span class="info-label">总页数:</span>
-                <span class="info-value" id="totalPages">-</span>
-            </div>
-            <div class="info-item">
-                <span class="info-label">随机页数:</span>
-                <span class="info-value" id="randomPage">-</span>
-            </div>
-            <div class="info-item">
-                <span class="info-label">访问链接:</span>
-                <span class="info-value" id="visitUrl">-</span>
-            </div>
-        </div>
+
         
         <button class="btn" onclick="generateRandomPage()">
             📚 随机访问
@@ -173,12 +156,6 @@
             // 构建访问链接
             const baseUrl = publisher.url.replace(/\/$/, '');
             const visitUrl = `${baseUrl}?page=${randomPage}`;
-            
-            // 更新页面信息
-            document.getElementById('publisherId').textContent = randomPublisherId;
-            document.getElementById('totalPages').textContent = publisher.total_pages;
-            document.getElementById('randomPage').textContent = randomPage;
-            document.getElementById('visitUrl').textContent = visitUrl;
             
             // 跳转到随机页面
             window.open(visitUrl, '_blank');
