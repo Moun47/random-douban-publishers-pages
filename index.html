@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>随机豆瓣出版社页面</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 28px;
+        }
+        
+        p {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 16px;
+        }
+        
+        .info {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+            text-align: left;
+        }
+        
+        .info-item {
+            margin-bottom: 10px;
+        }
+        
+        .info-label {
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .info-value {
+            color: #666;
+            margin-left: 10px;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.6);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        .stats {
+            margin-top: 30px;
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .loading {
+            color: #666;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>随机豆瓣出版社页面</h1>
+        <p>点击按钮，随机访问豆瓣上出版社的图书页面</p>
+        
+        <div class="info">
+            <div class="info-item">
+                <span class="info-label">出版社ID:</span>
+                <span class="info-value" id="publisherId">-</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">总页数:</span>
+                <span class="info-value" id="totalPages">-</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">随机页数:</span>
+                <span class="info-value" id="randomPage">-</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">访问链接:</span>
+                <span class="info-value" id="visitUrl">-</span>
+            </div>
+        </div>
+        
+        <button class="btn" onclick="generateRandomPage()">
+            📚 随机访问
+        </button>
+        
+        <div class="stats">
+            <p id="stats">正在加载数据...</p>
+        </div>
+    </div>
+
+    <script>
+        let publishers = {};
+        let publisherIds = [];
+        
+        // 加载出版社数据
+        async function loadPublishers() {
+            try {
+                const response = await fetch('publishers_with_pages.json');
+                publishers = await response.json();
+                publisherIds = Object.keys(publishers);
+                
+                document.getElementById('stats').textContent = 
+                    `共加载 ${publisherIds.length} 家出版社数据`;
+                
+                // 初始化生成一个随机页面
+                generateRandomPage();
+            } catch (error) {
+                console.error('加载出版社数据失败:', error);
+                document.getElementById('stats').textContent = 
+                    '加载数据失败，请检查文件是否存在';
+            }
+        }
+        
+        // 生成随机页面
+        function generateRandomPage() {
+            if (publisherIds.length === 0) {
+                alert('数据尚未加载完成，请稍候');
+                return;
+            }
+            
+            // 随机选择一个出版社
+            const randomPublisherId = publisherIds[Math.floor(Math.random() * publisherIds.length)];
+            const publisher = publishers[randomPublisherId];
+            
+            // 随机选择一个有效页数
+            const randomPage = Math.floor(Math.random() * publisher.total_pages) + 1;
+            
+            // 构建访问链接
+            const baseUrl = publisher.url.replace(/\/$/, '');
+            const visitUrl = `${baseUrl}?page=${randomPage}`;
+            
+            // 更新页面信息
+            document.getElementById('publisherId').textContent = randomPublisherId;
+            document.getElementById('totalPages').textContent = publisher.total_pages;
+            document.getElementById('randomPage').textContent = randomPage;
+            document.getElementById('visitUrl').textContent = visitUrl;
+            
+            // 跳转到随机页面
+            window.open(visitUrl, '_blank');
+        }
+        
+        // 页面加载完成后加载数据
+        window.addEventListener('DOMContentLoaded', loadPublishers);
+    </script>
+</body>
+</html>
