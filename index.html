@@ -130,8 +130,8 @@
                 document.getElementById('stats').textContent = 
                     `共加载 ${publisherIds.length} 家出版社数据`;
                 
-                // 初始化生成一个随机页面
-                generateRandomPage();
+                // 注释掉自动生成，只在用户点击按钮时生成
+                // generateRandomPage();
             } catch (error) {
                 console.error('加载出版社数据失败:', error);
                 document.getElementById('stats').textContent = 
