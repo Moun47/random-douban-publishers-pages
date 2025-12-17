@@ -88,6 +88,16 @@
             transform: translateY(0);
         }
         
+        .btn-secondary {
+            margin-left: 15px;
+            background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+            box-shadow: 0 5px 15px rgba(108, 117, 125, 0.4);
+        }
+        
+        .btn-secondary:hover {
+            box-shadow: 0 8px 20px rgba(108, 117, 125, 0.6);
+        }
+        
         .stats {
             margin-top: 30px;
             color: #666;
@@ -97,6 +107,78 @@
         .loading {
             color: #666;
             font-style: italic;
+        }
+
+        /* 模态框样式 */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 700px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: modalSlideIn 0.3s ease-out;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: #333;
+            text-decoration: none;
+        }
+
+        .modal-content h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+
+        .modal-content h3 {
+            color: #555;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+
+        .modal-content p {
+            color: #666;
+            margin-bottom: 15px;
+            line-height: 1.6;
+            text-align: left;
         }
     </style>
 </head>
@@ -110,9 +192,34 @@
         <button class="btn" onclick="generateRandomPage()">
             📚 随机访问
         </button>
+        <button class="btn btn-secondary" onclick="toggleAboutModal()"></button>
+            ℹ️ 项目说明
+        </button>
         
         <div class="stats">
             <p id="stats">正在加载数据...</p>
+        </div>
+
+        <!-- 项目说明模态框 -->
+        <div id="aboutModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="toggleAboutModal()">&times;</span>
+                <h2>关于本项目</h2>
+                
+                <h3>1. 为什么做这个</h3>
+                <p>看电影是一个人的事，不需要看评分；电影是用视觉讲故事的，不需要其他文字信息去降维说明。</p>
+                <p>至少我们与一部电影的初次相遇应该纯粹一点。</p>
+                
+                <h3>2. 什么时候用这个</h3>
+                <p>如果你有明确的观影目的，也就是明确知道自己想看哪部电影，就不需要用这个了。</p>
+                <p>这个是不知道看哪部电影的时候用的，这里能随机出一些意料之外的选择，有些电影只靠推荐系统的话可能这辈子都不会遇到，这是很遗憾的事情。</p>
+                
+                <h3>3. 不完美的地方</h3>
+                <p>被忽略的电影：因为数据源来自豆瓣电影排行榜，所以没有评分的热度比较低的小众电影基本上都被忽略了。</p>
+                <p>截图也可能存在偏见：剧照页面的很多截图都是用户上传的，因此不一定能很好地代表这部电影。</p>
+                <p>也因为对所有的电影都一视同仁，出现的机会是均等的，所以也会随机到评分特别低的公认粪作，因为此类电影的占比并不高，所以在随机到此类作品时可以选择跳过重新随机。后续可能会开发筛选随机范围的功能，实现指定的评分甚至评分人数范围内的随机。</p>
+                <p>默认是完全随机的，所以也会随机到很烂的电影，这些电影就像豆瓣上的部分教材、教辅条目一样毫无意义，但是本项目暂时还不支持对电影的筛选，后续会考虑上线评分和打分人数两方面的筛选。</p>
+            </div>
         </div>
     </div>
 
@@ -163,6 +270,24 @@
         
         // 页面加载完成后加载数据
         window.addEventListener('DOMContentLoaded', loadPublishers);
+
+        // 切换项目说明模态框
+        function toggleAboutModal() {
+            const modal = document.getElementById('aboutModal');
+            if (modal.style.display === 'block') {
+                modal.style.display = 'none';
+            } else {
+                modal.style.display = 'block';
+            }
+        }
+
+        // 点击模态框外部关闭模态框
+        window.onclick = function(event) {
+            const modal = document.getElementById('aboutModal');
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        }
     </script>
 </body>
 </html>
