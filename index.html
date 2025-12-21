@@ -187,8 +187,22 @@
         <h1>随机豆瓣出版社页面</h1>
         <p>点击按钮，随机访问豆瓣上出版社的图书页面</p>
         
+        <div style="margin: 20px 0; padding: 20px; background: #f8f9fa; border-radius: 8px;">
+            <h3 style="margin-bottom: 15px; color: #333; font-size: 16px;">🎯 随机范围设置</h3>
+            <div style="margin-bottom: 10px;">
+                <label for="rangeSlider" style="display: block; margin-bottom: 8px; color: #666; font-size: 14px;">
+                    限制在出版社前 <span id="rangeValue">100</span>% 的页数中随机
+                </label>
+                <input type="range" id="rangeSlider" min="10" max="100" value="100" step="5" 
+                       oninput="updateRangeValue(this.value)" 
+                       style="width: 100%; height: 8px; border-radius: 5px; background: #ddd; outline: none; -webkit-appearance: none;">
+                <div style="display: flex; justify-content: space-between; margin-top: 5px; color: #999; font-size: 12px;">
+                    <span>10%</span>
+                    <span>100%</span>
+                </div>
+            </div>
+        </div>
 
-        
         <button class="btn" onclick="generateRandomPage()">
             📚 随机访问
         </button>
@@ -220,6 +234,11 @@
             }
         }
         
+        // 更新范围值显示
+        function updateRangeValue(value) {
+            document.getElementById('rangeValue').textContent = value;
+        }
+        
         // 生成随机页面
         function generateRandomPage() {
             if (publisherIds.length === 0) {
@@ -227,12 +246,18 @@
                 return;
             }
             
+            // 获取当前设置的百分比
+            const rangePercentage = parseInt(document.getElementById('rangeValue').textContent);
+            
             // 随机选择一个出版社
             const randomPublisherId = publisherIds[Math.floor(Math.random() * publisherIds.length)];
             const publisher = publishers[randomPublisherId];
             
-            // 随机选择一个有效页数
-            const randomPage = Math.floor(Math.random() * publisher.total_pages) + 1;
+            // 根据百分比计算最大页数限制
+            const maxPageLimit = Math.ceil(publisher.total_pages * (rangePercentage / 100));
+            
+            // 随机选择一个有效页数（不超过计算出的最大限制）
+            const randomPage = Math.floor(Math.random() * maxPageLimit) + 1;
             
             // 构建访问链接
             const baseUrl = publisher.url.replace(/\/$/, '');
