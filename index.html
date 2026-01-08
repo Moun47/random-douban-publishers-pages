@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>随机豆瓣出版社页面</title>
+    <title>随机豆瓣出版社与图书</title>
     <style>
         * {
             margin: 0;
@@ -109,6 +109,105 @@
             font-style: italic;
         }
 
+        /* 设置区域 */
+        .settings {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .settings h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        /* 链接类型选择 */
+        .radio-group {
+            display: flex;
+            gap: 20px;
+        }
+
+        .radio-group label {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            color: #666;
+        }
+
+        .radio-group input[type="radio"] {
+            margin-right: 8px;
+        }
+
+        /* 评分区间 */
+        .range-inputs {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .range-item {
+            flex: 1;
+        }
+
+        .range-item input[type="number"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        /* 评价人数滑块 */
+        .slider-container {
+            margin-top: 10px;
+        }
+
+        .slider-wrapper {
+            position: relative;
+            margin: 20px 0;
+        }
+
+        .slider {
+            width: 100%;
+            height: 8px;
+            border-radius: 5px;
+            background: #ddd;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(102, 126, 234, 0.4);
+        }
+
+        .slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 6px rgba(102, 126, 234, 0.4);
+        }
+
+        .slider-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+            color: #999;
+            font-size: 12px;
+        }
+
         /* 模态框样式 */
         .modal {
             display: none;
@@ -184,27 +283,73 @@
 </head>
 <body>
     <div class="container">
-        <h1>随机豆瓣出版社页面</h1>
-        <p>点击按钮，随机访问豆瓣上出版社的图书页面</p>
+        <h1>随机豆瓣出版社与图书</h1>
+        <p>点击按钮随机访问豆瓣出版社或图书页面</p>
         
-        <div style="margin: 20px 0; padding: 20px; background: #f8f9fa; border-radius: 8px;">
-            <h3 style="margin-bottom: 15px; color: #333; font-size: 16px;">🎯 随机范围设置</h3>
-            <div style="margin-bottom: 10px;">
+        <!-- 链接类型选择 -->
+        <div class="settings">
+            <h3>选择链接类型</h3>
+            <div class="radio-group">
+                <label>
+                    <input type="radio" name="linkType" value="publisher" checked>
+                    <span>出版社页面</span>
+                </label>
+                <label>
+                    <input type="radio" name="linkType" value="book">
+                    <span>图书页面</span>
+                </label>
+            </div>
+        </div>
+        
+        <!-- 出版社随机范围设置 -->
+        <div class="settings" id="publisherSettings">
+            <h3>🎯 出版社随机范围设置</h3>
+            <div>
                 <label for="rangeSlider" style="display: block; margin-bottom: 8px; color: #666; font-size: 14px;">
                     限制在出版社前 <span id="rangeValue">100</span>% 的页数中随机
                 </label>
-                <input type="range" id="rangeSlider" min="1" max="100" value="100" step="1" 
-                       oninput="updateRangeValue(this)" 
-                       style="width: 100%; height: 8px; border-radius: 5px; background: #ddd; outline: none; -webkit-appearance: none;">
+                <input type="range" id="rangeSlider" min="1" max="100" value="100" step="1"
+                       oninput="updateRangeValue(this)" class="slider">
                 <div style="display: flex; justify-content: space-between; margin-top: 5px; color: #999; font-size: 12px;">
                     <span>1%</span>
                     <span>100%</span>
                 </div>
             </div>
         </div>
+        
+        <!-- 图书评分筛选 -->
+        <div class="settings" id="bookSettings" style="display: none;">
+            <h3>📊 评分区间</h3>
+            <div class="range-inputs">
+                <div class="range-item">
+                    <input type="number" id="minRating" min="0" max="10" step="0.1" value="0" placeholder="最低评分">
+                </div>
+                <div class="range-item">
+                    <input type="number" id="maxRating" min="0" max="10" step="0.1" value="10" placeholder="最高评分">
+                </div>
+            </div>
+        </div>
+        
+        <!-- 图书评价人数筛选 -->
+        <div class="settings" id="reviewSettings" style="display: none;">
+            <h3>👥 评价人数</h3>
+            <div class="slider-container">
+                <div class="slider-wrapper single-slider">
+                    <input type="range" id="reviewLevelSlider" min="0" max="5" step="1" value="0" class="slider">
+                </div>
+                <div class="slider-labels">
+                    <span>全部</span>
+                    <span>十人</span>
+                    <span>百人</span>
+                    <span>千人</span>
+                    <span>万人</span>
+                    <span>十万人</span>
+                </div>
+            </div>
+        </div>
 
         <button class="btn" onclick="generateRandomPage()">
-            📚 随机访问
+            🎲 随机访问
         </button>
         <div class="stats">
             <p id="stats">正在加载数据...</p>
@@ -214,23 +359,53 @@
     <script>
         let publishers = {};
         let publisherIds = [];
+        let booksData = {};
+        let allBooks = [];
+        let isDataLoaded = false;
         
-        // 加载出版社数据
-        async function loadPublishers() {
+        // 加载数据
+        async function loadData() {
             try {
-                const response = await fetch('publishers_with_pages.json');
-                publishers = await response.json();
+                // 加载出版社数据
+                const publishersResponse = await fetch('publishers_with_pages.json');
+                publishers = await publishersResponse.json();
                 publisherIds = Object.keys(publishers);
                 
-                document.getElementById('stats').textContent = 
-                    `共加载 ${publisherIds.length} 家出版社数据`;
+                // 加载图书数据
+                const booksResponse = await fetch('scraping_results.json');
+                booksData = await booksResponse.json();
                 
-                // 注释掉自动生成，只在用户点击按钮时生成
-                // generateRandomPage();
+                // 整理所有图书到一个数组
+                allBooks = [];
+                for (const pressId in booksData) {
+                    if (booksData.hasOwnProperty(pressId)) {
+                        allBooks = allBooks.concat(booksData[pressId].books);
+                    }
+                }
+                
+                isDataLoaded = true;
+                document.getElementById('stats').textContent = 
+                    `共加载 ${publisherIds.length} 家出版社数据，${allBooks.length} 本图书数据`;
+                
             } catch (error) {
-                console.error('加载出版社数据失败:', error);
+                console.error('加载数据失败:', error);
                 document.getElementById('stats').textContent = 
                     '加载数据失败，请检查文件是否存在';
+            }
+        }
+        
+        // 切换链接类型时显示/隐藏对应设置
+        function toggleSettings() {
+            const linkType = document.querySelector('input[name="linkType"]:checked').value;
+            
+            if (linkType === 'publisher') {
+                document.getElementById('publisherSettings').style.display = 'block';
+                document.getElementById('bookSettings').style.display = 'none';
+                document.getElementById('reviewSettings').style.display = 'none';
+            } else {
+                document.getElementById('publisherSettings').style.display = 'none';
+                document.getElementById('bookSettings').style.display = 'block';
+                document.getElementById('reviewSettings').style.display = 'block';
             }
         }
         
@@ -248,38 +423,125 @@
             document.getElementById('rangeValue').textContent = value;
         }
         
+        // 获取评价人数阈值
+        function getReviewCountThreshold(level) {
+            const thresholds = [0, 10, 100, 1000, 10000, 100000];
+            return thresholds[level] || 0;
+        }
+        
+        // 根据评分和评价人数筛选图书
+        function filterBooks() {
+            const minRating = parseFloat(document.getElementById('minRating').value) || 0;
+            const maxRating = parseFloat(document.getElementById('maxRating').value) || 10;
+            const reviewLevel = parseInt(document.getElementById('reviewLevelSlider').value) || 0;
+            const minReviewCount = getReviewCountThreshold(reviewLevel);
+            
+            return allBooks.filter(book => {
+                const rating = parseFloat(book.rating) || 0;
+                const reviewCount = parseInt(book.review_count) || 0;
+                
+                return rating >= minRating && rating <= maxRating && reviewCount >= minReviewCount;
+            });
+        }
+        
         // 生成随机页面
         function generateRandomPage() {
-            if (publisherIds.length === 0) {
+            if (!isDataLoaded) {
                 alert('数据尚未加载完成，请稍候');
                 return;
             }
             
-            // 获取当前设置的百分比
-            const rangePercentage = parseInt(document.getElementById('rangeValue').textContent);
+            // 获取当前链接类型
+            const linkType = document.querySelector('input[name="linkType"]:checked').value;
             
-            // 随机选择一个出版社
-            const randomPublisherId = publisherIds[Math.floor(Math.random() * publisherIds.length)];
-            const publisher = publishers[randomPublisherId];
-            
-            // 根据百分比计算最大页数限制
-            const maxPageLimit = Math.ceil(publisher.total_pages * (rangePercentage / 100));
-            
-            // 随机选择一个有效页数（不超过计算出的最大限制）
-            const randomPage = Math.floor(Math.random() * maxPageLimit) + 1;
-            
-            // 构建访问链接
-            const baseUrl = publisher.url.replace(/\/$/, '');
-            const visitUrl = `${baseUrl}?page=${randomPage}`;
-            
-            // 跳转到随机页面
-            window.open(visitUrl, '_blank');
+            if (linkType === 'publisher') {
+                // 生成随机出版社页面
+                const rangePercentage = parseInt(document.getElementById('rangeValue').textContent);
+                
+                // 随机选择一个出版社
+                const randomPublisherId = publisherIds[Math.floor(Math.random() * publisherIds.length)];
+                const publisher = publishers[randomPublisherId];
+                
+                // 根据百分比计算最大页数限制
+                const maxPageLimit = Math.ceil(publisher.total_pages * (rangePercentage / 100));
+                
+                // 随机选择一个有效页数（不超过计算出的最大限制）
+                const randomPage = Math.floor(Math.random() * maxPageLimit) + 1;
+                
+                // 构建访问链接
+                const baseUrl = publisher.url.replace(/\/$/, '');
+                const visitUrl = `${baseUrl}?page=${randomPage}`;
+                
+                // 跳转到随机页面
+                window.open(visitUrl, '_blank');
+            } else {
+                // 生成随机图书页面
+                const filteredBooks = filterBooks();
+                
+                if (filteredBooks.length === 0) {
+                    alert('没有符合条件的图书，请调整筛选条件');
+                    return;
+                }
+                
+                // 随机选择一本图书
+                const randomBook = filteredBooks[Math.floor(Math.random() * filteredBooks.length)];
+                
+                // 跳转到图书页面
+                window.open(randomBook.url, '_blank');
+            }
         }
         
-        // 页面加载完成后加载数据
-        window.addEventListener('DOMContentLoaded', loadPublishers);
-
-
+        // 为评分输入框添加鼠标悬停滚动调整功能
+        function addScrollAdjustment() {
+            const ratingInputs = document.querySelectorAll('#minRating, #maxRating');
+            
+            ratingInputs.forEach(input => {
+                input.addEventListener('mouseenter', function() {
+                    // 添加滚动事件监听器
+                    const handleScroll = (e) => {
+                        e.preventDefault();
+                        
+                        const currentValue = parseFloat(input.value) || 0;
+                        const step = parseFloat(input.step) || 0.1;
+                        const min = parseFloat(input.min) || 0;
+                        const max = parseFloat(input.max) || 10;
+                        
+                        // 根据滚动方向调整数值
+                        let newValue;
+                        if (e.deltaY < 0) {
+                            // 向上滚动，增加数值
+                            newValue = Math.min(max, currentValue + step);
+                        } else {
+                            // 向下滚动，减少数值
+                            newValue = Math.max(min, currentValue - step);
+                        }
+                        
+                        // 更新输入框数值，保留一位小数
+                        input.value = newValue.toFixed(1);
+                    };
+                    
+                    // 添加滚动事件
+                    input.addEventListener('wheel', handleScroll);
+                    
+                    // 鼠标离开时移除事件监听
+                    input.addEventListener('mouseleave', function cleanup() {
+                        input.removeEventListener('wheel', handleScroll);
+                        input.removeEventListener('mouseleave', cleanup);
+                    });
+                });
+            });
+        }
+        
+        // 监听链接类型变化
+        document.querySelectorAll('input[name="linkType"]').forEach(radio => {
+            radio.addEventListener('change', toggleSettings);
+        });
+        
+        // 页面加载完成后加载数据和滚动调整功能
+        window.addEventListener('DOMContentLoaded', () => {
+            loadData();
+            addScrollAdjustment();
+        });
     </script>
 </body>
 </html>
